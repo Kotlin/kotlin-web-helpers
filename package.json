@@ -22,7 +22,9 @@
   },
   "files": [
     "LICENSE",
-    "README.md"
+    "NOTICE",
+    "README.md",
+    "dist/"
   ],
   "scripts": {
     "build": "copyfiles static/* dist/ & rollup -c rollup.config.mjs",
