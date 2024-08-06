@@ -1,6 +1,6 @@
 /*
  * Copyright 2010-2020 JetBrains s.r.o. and Kotlin Programming Language contributors.
- * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
 import typescript from '@rollup/plugin-typescript';
@@ -8,7 +8,7 @@ import nodeResolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import terser from '@rollup/plugin-terser';
 
-import pckg from "./package.json" with { type: 'json' };
+import pckg from "./package.json" with {type: "json"};
 
 export default [
     {

@@ -20,6 +20,10 @@
     "mocha-teamcity-reporter": "^4.2.0",
     "copyfiles": "^2.4.1"
   },
+  "files": [
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "build": "copyfiles static/* dist/ & rollup -c rollup.config.mjs",
     "test": "mocha",
