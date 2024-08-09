@@ -12,5 +12,5 @@ This package is necessary for better integration with web targets of Kotlin Grad
 - `nodejs.ts` - runner for kotlin-test for Node.JS test tools
 - `nodejs-empty.ts` - empty runner for dry-run
 - `tc-log-appender.js` - logger for Karma (in `config.loggers`)
-- `tc-log-error-webpack.js` - specific filter of warning for Kotlin Gradle Plugin
+- `tc-log-error-webpack.js` - specific filter of warnings for Kotlin Gradle Plugin
 - `webpack-5-debug.js` - fix of problem with source maps in webpack 5 (https://github.com/webpack/webpack/issues/12951)
