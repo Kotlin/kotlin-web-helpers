@@ -1,7 +1,7 @@
 {
-  "name": "kotlin-test-js-runner",
+  "name": "kotlin-web-helpers",
   "version": "2.0.0",
-  "description": "Simple Kotlin/JS tests runner with TeamCity reporter",
+  "description": "Kotlin/JS and Kotlin/Wasm utilities to work with Kotlin Gradle Plugin",
   "license": "Apache-2.0",
   "dependencies": {
     "format-util": "^1.0.5"
