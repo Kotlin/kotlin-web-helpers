@@ -83,19 +83,18 @@ export function fixMochaTimeout(config) {
         }
         if (mocha === Object(mocha)) {
             mocha.timeout = 0;
-        }
-        else {
+        } else {
             console.error('config.client.mocha is not an object');
             process.exit(1);
         }
-    }
-    else {
+    } else {
         console.error('config.client is not an object');
         process.exit(1);
     }
 }
 
 export function fixBrowserActivityTimeout(config) {
-    config.browserNoActivityTimeout = null
-    config.pingTimeout = 24 * 60 * 60 * 1000
+    config.browserNoActivityTimeout = 24 * 60 * 60 * 1000;
+    config.browserDisconnectTimeout = 24 * 60 * 60 * 1000;
+    config.pingTimeout = 24 * 60 * 60 * 1000;
 }

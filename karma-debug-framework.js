@@ -5,16 +5,15 @@
 
 'use strict';
 
-const initDebug = function (injector) {
-    configureTimeouts(injector)
+import {fixBrowserActivityTimeout, fixMochaTimeout} from "./src/DebugConfigurator";
+
+const initDebug = function (injector, config) {
+    configureTimeouts(injector, config)
 };
 
-function configureTimeouts(injector) {
+function configureTimeouts(injector, config) {
     const webServer = injector.get('webServer');
     if (webServer) {
-        // IDE posts http '/run' request to trigger tests (see intellijRunner.js).
-        // If a request executes more than `httpServer.timeout`, it will be timed out.
-        // Disable timeout, as by default httpServer.timeout=120 seconds, not enough for suspended execution.
         webServer.timeout = 0
     }
     const socketServer = injector.get('socketServer');
@@ -27,8 +26,11 @@ function configureTimeouts(injector) {
         socketServer.set('heartbeat timeout', 24 * 60 * 60 * 1000);
         socketServer.set('heartbeat interval', 24 * 60 * 60 * 1000)
     }
+
+    fixMochaTimeout(config);
+    fixBrowserActivityTimeout(config);
 }
 
-initDebug.$inject = ['injector'];
+initDebug.$inject = ['injector', 'config'];
 
 module.exports = initDebug;
