@@ -48,13 +48,6 @@ export default [
         }
     },
     {
-        input: './karma-debug-runner.js',
-        output: {
-            file: 'dist/karma-debug-runner.js',
-            format: 'cjs'
-        }
-    },
-    {
         input: './karma-debug-framework.js',
         output: {
             file: 'dist/karma-debug-framework.js',
@@ -100,6 +93,7 @@ export default [
     },
     {
         input: './karma-webpack-output.js',
+        external: ['path', 'fs'],
         output: {
             file: 'dist/karma-webpack-output.js',
             format: 'cjs'
