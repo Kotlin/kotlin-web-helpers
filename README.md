@@ -14,3 +14,4 @@ This package is necessary for better integration with web targets of Kotlin Grad
 - `tc-log-appender.js` - logger for Karma (in `config.loggers`)
 - `tc-log-error-webpack.js` - specific filter of warnings for Kotlin Gradle Plugin
 - `webpack-5-debug.js` - fix of problem with source maps in webpack 5 (https://github.com/webpack/webpack/issues/12951)
+- `SourceMapDevToolPlugin.js`, `EvalDevToolModulePlugin.js` and `SourceMapDevToolPlugin.js` - forks of corresponding plugins from Webpack 5.101.3 with the patch that includes `ignoreList` support
