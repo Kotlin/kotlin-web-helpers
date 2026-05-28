@@ -98,28 +98,7 @@ export default [
             file: 'dist/karma-webpack-output.js',
             format: 'cjs'
         }
-    },
-    {
-        input: './SourceMapDevToolPlugin.js',
-        output: {
-            file: 'dist/SourceMapDevToolPlugin.js',
-            format: 'cjs'
-        }
-    },
-    {
-        input: './EvalSourceMapDevToolPlugin.js',
-        output: {
-            file: 'dist/EvalSourceMapDevToolPlugin.js',
-            format: 'cjs'
-        }
-    },
-    {
-        input: './EvalDevToolModulePlugin.js',
-        output: {
-            file: 'dist/EvalDevToolModulePlugin.js',
-            format: 'cjs'
-        }
-    },
+    }
 ]
 
 function plugins() {
