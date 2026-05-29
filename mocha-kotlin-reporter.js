@@ -24,42 +24,90 @@ import {
     TEST_START
 } from "./src/teamcity-format";
 
-const processPID = process.pid.toString();
-
-let Base, log, logError;
-
-Base = require('mocha').reporters.Base;
-log = console.log;
-logError = console.error;
-
 function isNil(value) {
     return value == null; 	// eslint-disable-line
 }
 
+function configureHtmlReporter(teamcityForWeb, Reporters, runner, options) {
+    if (!Reporters || !Reporters.HTML) {
+        console.error("Unable to configure HTML reporter: Mocha HTML reporter not found")
+        return;
+    }
+
+    const htmlAttached = !!(Reporters && Reporters.HTML
+        && typeof document !== 'undefined' && document.getElementById('mocha'));
+    if (htmlAttached) {
+        // Dirty hack: HTML has own prototype functions, we have to inherit them.
+        // But I don't want to extend TeamcityForWeb.prototype beforehand.
+        const instanceProto = Object.create(Reporters.HTML.prototype);
+        Object.setPrototypeOf(teamcityForWeb, instanceProto);
+        Reporters.HTML.call(teamcityForWeb, runner, options);
+    } else {
+        console.warn("No base reporter provided for Mocha." +
+            " Please configure Teamcity reporter with reporterOptions.Base = Mocha.reporters.Base or other.")
+    }
+}
+
+function configureBaseReporter(teamcityForWeb, Reporters, runner, options) {
+    Reporters.Base.call(teamcityForWeb, runner, options)
+}
+
 /**
- * Initialize a new `Teamcity` reporter.
+ * Core TeamCity reporter implementation that does not depend on Node.js `process` globals.
+ * Suitable for running Mocha in a browser. All options must be provided explicitly via
+ * `options.reporterOptions`.
+ *
+ * When running in a browser that exposes Mocha's HTML reporter via
+ * `window.Mocha.reporters.HTML` and the page contains a `<div id="mocha"></div>`,
+ * the HTML reporter is attached automatically so test progress is rendered on the
+ * page in addition to TeamCity service messages going to the console.
+ *
+ * Accepted reporterOptions:
+ *   - flowId            (string)
+ *   - useStdError       (boolean)
+ *   - recordHookFailures (boolean)
+ *   - actualVsExpected  (boolean)
+ *   - topLevelSuite     (string)
+ *   - log               (function) optional custom logger, defaults to console.log
+ *   - logError          (function) optional custom error logger, defaults to console.error
+ *   - Base              (function) optional Mocha Base reporter constructor; if provided,
+ *                       it will be invoked as Base.call(this, runner) to install
+ *                       Mocha's standard stats tracking on `this`. Ignored when the
+ *                       HTML reporter is auto-attached (HTML invokes Base itself).
  *
  * @param {Runner} runner
  * @param {options} options
  * @api public
  */
-
-function Teamcity(runner, options) {
+function TeamcityForWeb(runner, options) {
     options = options || {};
     const reporterOptions = options.reporterOptions || {};
-    let flowId, useStdError, recordHookFailures, actualVsExpected;
-    (reporterOptions.flowId) ? flowId = reporterOptions.flowId : flowId = process.env['MOCHA_TEAMCITY_FLOWID'] || processPID;
-    (reporterOptions.useStdError) ? useStdError = reporterOptions.useStdError : useStdError = process.env['USE_STD_ERROR'];
-    (reporterOptions.recordHookFailures) ? recordHookFailures = reporterOptions.recordHookFailures : recordHookFailures =
-        process.env['RECORD_HOOK_FAILURES'];
-    (reporterOptions.actualVsExpected) ? actualVsExpected = reporterOptions.actualVsExpected : actualVsExpected =
-        process.env['ACTUAL_VS_EXPECTED'];
-    (useStdError) ? useStdError = (useStdError.toLowerCase() === 'true') : useStdError = false;
-    (recordHookFailures) ? recordHookFailures = (recordHookFailures.toLowerCase() === 'true') : recordHookFailures = false;
-    actualVsExpected ? actualVsExpected = (actualVsExpected.toLowerCase() === 'true') : actualVsExpected = false;
-    Base.call(this, runner);
-    let stats = this.stats;
-    const topLevelSuite = reporterOptions.topLevelSuite || process.env['MOCHA_TEAMCITY_TOP_LEVEL_SUITE'];
+
+    const flowId = reporterOptions.flowId || '';
+    const useStdError = !!reporterOptions.useStdError;
+    const recordHookFailures = !!reporterOptions.recordHookFailures;
+    const actualVsExpected = !!reporterOptions.actualVsExpected;
+    const topLevelSuite = reporterOptions.topLevelSuite;
+
+    const log = reporterOptions.log || function (msg) { console.log(msg); };
+    const logError = reporterOptions.logError || function (msg) { console.error(msg); };
+
+    if (typeof reporterOptions.Base === 'function') {
+        if (typeof reporterOptions.alsoWithHtml !== 'undefined') {
+            console.warn("Reporter option 'alsoWithHtml' has no effect. Because custom reporterOptions.Base was provided.")
+        }
+        reporterOptions.Base.call(this, runner);
+    } else {
+        const alsoWithHtml = reporterOptions.alsoWithHtml || true;
+        const Reporters = (typeof window !== 'undefined' && window.Mocha && window.Mocha.reporters) || null;
+        if (alsoWithHtml) {
+            configureHtmlReporter(this, Reporters, runner, options)
+        } else {
+            configureBaseReporter(this, Reporters, runner, options)
+        }
+    }
+
+    const stats = this.stats || runner.stats;
 
     runner.on('suite', function (suite) {
         if (suite.root) {
@@ -126,7 +174,7 @@ function Teamcity(runner, options) {
 
     runner.on('end', function () {
         let duration;
-        (typeof stats === 'undefined') ? duration = null : duration = stats.duration;
+        (typeof stats === 'undefined' || stats === null) ? duration = null : duration = stats.duration;
         if (topLevelSuite) {
             isNil(duration) ? log(formatMessage(SUITE_END_NO_DURATION, topLevelSuite, flowId)) : log(
                 formatMessage(SUITE_END, topLevelSuite, duration, flowId));
@@ -134,9 +182,53 @@ function Teamcity(runner, options) {
     });
 }
 
+/**
+ * Node.js Mocha Teamcity reporter. Reads defaults from `process.env` and `process.pid`,
+ * then delegates to `TeamcityForWeb` for the actual event handling.
+ *
+ * @param {Runner} runner
+ * @param {options} options
+ * @api public
+ */
+function Teamcity(runner, options) {
+    options = options || {};
+    const reporterOptions = options.reporterOptions || {};
+
+    const processPID = process.pid.toString();
+
+    let flowId, useStdError, recordHookFailures, actualVsExpected;
+    (reporterOptions.flowId) ? flowId = reporterOptions.flowId : flowId = process.env['MOCHA_TEAMCITY_FLOWID'] || processPID;
+    (reporterOptions.useStdError) ? useStdError = reporterOptions.useStdError : useStdError = process.env['USE_STD_ERROR'];
+    (reporterOptions.recordHookFailures) ? recordHookFailures = reporterOptions.recordHookFailures : recordHookFailures =
+        process.env['RECORD_HOOK_FAILURES'];
+    (reporterOptions.actualVsExpected) ? actualVsExpected = reporterOptions.actualVsExpected : actualVsExpected =
+        process.env['ACTUAL_VS_EXPECTED'];
+    (useStdError) ? useStdError = (useStdError.toLowerCase() === 'true') : useStdError = false;
+    (recordHookFailures) ? recordHookFailures = (recordHookFailures.toLowerCase() === 'true') : recordHookFailures = false;
+    actualVsExpected ? actualVsExpected = (actualVsExpected.toLowerCase() === 'true') : actualVsExpected = false;
+    const topLevelSuite = reporterOptions.topLevelSuite || process.env['MOCHA_TEAMCITY_TOP_LEVEL_SUITE'];
+
+    const Base = require('mocha').reporters.Base;
+
+    TeamcityForWeb.call(this, runner, {
+        reporterOptions: {
+            flowId: flowId,
+            useStdError: useStdError,
+            recordHookFailures: recordHookFailures,
+            actualVsExpected: actualVsExpected,
+            topLevelSuite: topLevelSuite,
+            alsoWithHtml: true, // this is redundant as below we pass "Base"
+            Base: Base
+        }
+    });
+}
+
 
 /**
- * Expose `Teamcity`.
+ * Expose both `Teamcity` (Node.js) and `TeamcityForWeb` (browser).
  */
+module.exports = Teamcity;
+module.exports.Teamcity = Teamcity;
+module.exports.TeamcityForWeb = TeamcityForWeb;
 
-exports = module.exports = Teamcity;
+export { Teamcity, TeamcityForWeb };
