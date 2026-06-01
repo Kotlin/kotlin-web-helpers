@@ -41,6 +41,15 @@ export default [
         plugins: plugins()
     },
     {
+        input: './mochaBrowser.ts',
+        output: {
+            file: 'dist/kotlin-test-mocha-browser-runner.js',
+            format: 'esm',
+            sourcemap: true
+        },
+        plugins: plugins()
+    },
+    {
         input: './karma-kotlin-debug-plugin.js',
         output: {
             file: 'dist/karma-kotlin-debug-plugin.js',
