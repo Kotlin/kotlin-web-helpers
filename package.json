@@ -24,7 +24,11 @@
     "LICENSE",
     "NOTICE",
     "README.md",
-    "dist/"
+    "dist/",
+    "src/",
+    "*.ts",
+    "*.d.ts",
+    ".js"
   ],
   "scripts": {
     "build": "copyfiles static/* dist/ & rollup -c rollup.config.mjs",
