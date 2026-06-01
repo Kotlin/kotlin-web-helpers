@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Kotlin JS Tests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://unpkg.com/mocha/mocha.css" />
+</head>
+<body>
+<div id="mocha"></div>
+<script src="https://unpkg.com/mocha/mocha.js"></script>
+<script>
+    /** Kotlin test runner config */
+    config = {
+        /** Custom Mocha Reporter, note this will override "TeamcityForWeb" reporter */
+        // reporter: window.TeamcityForWeb,
+        /** Configure Mocha reporter (defaults TeamcityForWeb (mocha-kotlin-reporter.js) and HTML (official Mocha reporter)  */
+        reporterOptions: {
+            /** Disable HTML reporter, i.e. keep only TeamcityForWeb */
+            // alsoWithHtml: true,
+            /** Override Teamcity flowId, defaults to ?flowId=... query parameter */
+            // flowId: '',
+            /** Other options */
+            // recordHookFailures: true,
+            // actualVsExpected: true,
+        },
+        mochaSetupOptions: {
+            // timeout: 60_000, // ms
+            // slow: "75",
+            // etc...
+        },
+        /** Kotlin Test CLI arguments, currently supported only --include and --exclude in Gradle / IDEA wildcard format */
+        // kotlinTestCliArguments: ['--include', '*'],
+        /** Marker to indicate that tests finished, defaults to 'KOTLIN_TEST_RUN_FINISHED'. Page can be closed after that */
+        // testsFinishedMarker: 'MY KOTLIN TESTS RUN FINISHED'
+    }
+
+    /** Parse ?kotlinTestConfig={...} */
+    const urlParams = new URLSearchParams(window.location.search);
+    const configFromQueryParameter = urlParams.get('kotlinTestConfig') || {};
+    Object.assign(config, JSON.parse(configFromQueryParameter));
+
+    /** Place your custom configuration here */
+    // KOTLIN_TEST_BROWSER_CONFIG
+
+    window.kotlinTestBrowserRunner = window.kotlinTestBrowserRunner || {};
+    Object.assign(window.kotlinTestBrowserRunner, config)
+</script>
+<script src="tests.bundle-kotlinTestRunner.js"></script>
+<script>
+    // BEFORE tests.bundle.js LOAD
+</script>
+<script src="tests.bundle.js"></script>
+<script>
+    // BEFORE kotlinTestBrowserRunner run
+    window.addEventListener('load', function () {
+        window.kotlinTestBrowserRunner.run();
+        // AFTER kotlinTestBrowserRunner run
+    });
+</script>
+</body>
+</html>
