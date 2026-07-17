@@ -124,23 +124,31 @@ function TeamcityForWeb(runner, options) {
         log(formatMessage(TEST_START, test.title, flowId));
     });
 
+    function formatErrorDetails(err) {
+        const stack = err.stack || '';
+        const message = err.message || ''
+        const name = err.name || ''
+        return stack.startsWith(name) ? stack : (name + `: ` + message + '\n' + stack);
+    }
+
     runner.on('fail', function (test, err) {
+        const details = formatErrorDetails(err);
+
         if (actualVsExpected && (err.actual && err.expected)) {
             if (useStdError) {
-                logError(formatMessage(TEST_FAILED_COMPARISON, test.title, err.message, err.stack, err.actual,
-                                       err.expected, flowId));
+                logError(formatMessage(TEST_FAILED_COMPARISON, test.title, err.message, details, err.actual,
+                    err.expected, flowId));
             }
             else {
-                log(formatMessage(TEST_FAILED_COMPARISON, test.title, err.message, err.stack, err.actual,
-                                  err.expected, flowId));
+                log(formatMessage(TEST_FAILED_COMPARISON, test.title, err.message, details, err.actual,
+                    err.expected, flowId));
             }
-        }
-        else {
+        } else {
             if (useStdError) {
-                logError(formatMessage(TEST_FAILED, test.title, err.message, err.stack, flowId));
+                logError(formatMessage(TEST_FAILED, test.title, err.message, details, flowId));
             }
             else {
-                log(formatMessage(TEST_FAILED, test.title, err.message, err.stack, flowId));
+                log(formatMessage(TEST_FAILED, test.title, err.message, details, flowId));
             }
         }
     });
