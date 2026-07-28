@@ -37,7 +37,7 @@
 
     /** Parse ?kotlinTestConfig={...} */
     const urlParams = new URLSearchParams(window.location.search);
-    const configFromQueryParameter = urlParams.get('kotlinTestConfig') || {};
+    const configFromQueryParameter = urlParams.get('kotlinTestConfig') || '{}';
     Object.assign(config, JSON.parse(configFromQueryParameter));
 
     /** Place your custom configuration here */
