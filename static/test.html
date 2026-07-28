@@ -12,6 +12,15 @@
 <script>
     /** Kotlin test runner config */
     config = {
+        /** Kotlin JS test entry ESM module */
+        // kotlinJsTestsEntry: './jsTests.js',
+
+        /** Kotlin Wasm JS test entry ESM module */
+        // kotlinWasmJsTestsEntry: './wasmJsTests.js',
+
+        /** Load jasmine-like tests to global scope */
+        // loadJasmineTests: async () => {},
+
         /** Custom Mocha Reporter, note this will override "TeamcityForWeb" reporter */
         // reporter: window.TeamcityForWeb,
         /** Configure Mocha reporter (defaults TeamcityForWeb (mocha-kotlin-reporter.js) and HTML (official Mocha reporter)  */
@@ -53,8 +62,8 @@
 <script src="tests.bundle.js"></script>
 <script>
     // BEFORE kotlinTestBrowserRunner run
-    window.addEventListener('load', function () {
-        window.kotlinTestBrowserRunner.run();
+    window.addEventListener('load', async function () {
+        await window.kotlinTestBrowserRunner.run();
         // AFTER kotlinTestBrowserRunner run
     });
 </script>

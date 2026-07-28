@@ -47,6 +47,21 @@ declare global {
 
     interface KotlinTestBrowserRunnerConfig {
         /**
+         * Loads Jasmine-like tests on a global scope.
+         */
+        loadJasmineTests?: () => Promise<void>
+
+        /**
+         * Path to esm module with js tests entry point.
+         */
+        kotlinJsTestsEntry?: string
+
+        /**
+         * Path to esm module with wasm js tests entry point.
+         */
+        kotlinWasmJsTestsEntry?: string
+
+        /**
          * Mocha reporter constructor. Defaults to TeamcityForWeb (mocha-kotlin-reporter.js).
          */
         reporter?: any
@@ -100,7 +115,7 @@ declare global {
         /**
          * Run Mocha.
          */
-        run(): void
+        run(): Promise<void>
     }
 }
 
