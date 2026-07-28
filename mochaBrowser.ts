@@ -27,6 +27,9 @@ const parser = new CliArgsParser(
 const preExistingConfig: KotlinTestBrowserRunnerConfig = (window.kotlinTestBrowserRunner as KotlinTestBrowserRunnerConfig) || {};
 
 const runnerState = {
+    loadJasmineTests: preExistingConfig.loadJasmineTests,
+    kotlinJsTestsEntry: preExistingConfig.kotlinJsTestsEntry,
+    kotlinWasmJsTestsEntry: preExistingConfig.kotlinWasmJsTestsEntry,
     reporter: preExistingConfig.reporter || TeamcityForWeb,
     reporterOptions: preExistingConfig.reporterOptions || {},
     mochaSetupOptions: preExistingConfig.mochaSetupOptions || {},
@@ -39,6 +42,9 @@ const runnerState = {
 
 const runner: KotlinTestBrowserRunner = {
     configure(config: KotlinTestBrowserRunnerConfig) {
+        if (config.loadJasmineTests !== undefined) runnerState.loadJasmineTests = config.loadJasmineTests;
+        if (config.kotlinJsTestsEntry !== undefined) runnerState.kotlinJsTestsEntry = config.kotlinJsTestsEntry;
+        if (config.kotlinWasmJsTestsEntry !== undefined) runnerState.kotlinWasmJsTestsEntry = config.kotlinWasmJsTestsEntry;
         if (config.reporter !== undefined) runnerState.reporter = config.reporter;
         if (config.reporterOptions !== undefined) runnerState.reporterOptions = config.reporterOptions;
         if (config.mochaSetupOptions !== undefined) runnerState.mochaSetupOptions = config.mochaSetupOptions;
@@ -49,10 +55,32 @@ const runner: KotlinTestBrowserRunner = {
         if (config.testsFinishedMarker !== undefined) runnerState.testsFinishedMarker = config.testsFinishedMarker;
     },
 
-    run() {
+    async run() {
         const mocha = runnerState.mocha || window.mocha;
         if (!mocha) {
             throw new Error('Mocha is not available. Make sure mocha.js is loaded before invoking the Kotlin Test browser runner.');
+        }
+        if (runnerState.kotlinJsTestsEntry != null) {
+            try {
+                await import(runnerState.kotlinJsTestsEntry);
+            } catch (e) {
+                console.error('Failed to load Kotlin JS tests entry point', e);
+            }
+        }
+        if (runnerState.kotlinWasmJsTestsEntry != null) {
+            try {
+                let module = await import(runnerState.kotlinWasmJsTestsEntry);
+                module['startUnitTests']()
+            } catch (e) {
+                console.error('Failed to load Kotlin WASM JS tests entry point', e);
+            }
+        }
+        if (runnerState.loadJasmineTests != null) {
+            try {
+                await runnerState.loadJasmineTests();
+            } catch (e) {
+                console.error('Failed to load Jasmine tests', e);
+            }
         }
         mocha.run(function (failures: number) {
             if (typeof runnerState.onComplete === 'function') {
@@ -93,9 +121,4 @@ window.kotlinTest = {
 
 // User code now should describe tests via Jasmine spec
 // And call `window.kotlinTestBrowserRunner.run` when ready.
-// TODO: Add more explicit test integration mechanisms
-//  i.e. runner.runTests(function () {
-//      describe() { it() {} }
-//  })
-//  instead of doing it on window scope
 window.kotlinTestBrowserRunner = runner;
