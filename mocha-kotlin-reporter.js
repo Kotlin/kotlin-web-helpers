@@ -235,8 +235,10 @@ function Teamcity(runner, options) {
 /**
  * Expose both `Teamcity` (Node.js) and `TeamcityForWeb` (browser).
  */
-module.exports = Teamcity;
-module.exports.Teamcity = Teamcity;
-module.exports.TeamcityForWeb = TeamcityForWeb;
+if (typeof module !== 'undefined') {
+    module.exports = Teamcity;
+    module.exports.Teamcity = Teamcity;
+    module.exports.TeamcityForWeb = TeamcityForWeb;
+}
 
 export { Teamcity, TeamcityForWeb };

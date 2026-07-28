@@ -47,7 +47,14 @@ export default [
             format: 'esm',
             sourcemap: true
         },
-        plugins: plugins()
+        plugins: [
+            nodeResolve({
+                jsnext: true,
+                main: true,
+                browser: true
+            }),
+            ...plugins(),
+        ]
     },
     {
         input: './karma-kotlin-debug-plugin.js',
@@ -68,22 +75,28 @@ export default [
         external: ['path', 'util'],
         output: {
             file: 'dist/karma-kotlin-reporter.js',
-            format: 'cjs'
-        }
+            format: 'cjs',
+            sourcemap: true
+        },
+        plugins: plugins()
     },
     {
         input: './tc-log-appender.js',
         output: {
             file: 'dist/tc-log-appender.js',
-            format: 'cjs'
-        }
+            format: 'cjs',
+            sourcemap: true
+        },
+        plugins: plugins()
     },
     {
         input: './tc-log-error-webpack.js',
         output: {
             file: 'dist/tc-log-error-webpack.js',
-            format: 'cjs'
-        }
+            format: 'cjs',
+            sourcemap: true
+        },
+        plugins: plugins()
     },
     {
         input: './webpack-5-debug.js',
@@ -97,15 +110,18 @@ export default [
         external: ['path', 'util'],
         output: {
             file: 'dist/mocha-kotlin-reporter.js',
-            format: 'cjs'
-        }
+            format: 'cjs',
+            sourcemap: true
+        },
+        plugins: plugins()
     },
     {
         input: './karma-webpack-output.js',
         external: ['path', 'fs'],
         output: {
             file: 'dist/karma-webpack-output.js',
-            format: 'cjs'
+            format: 'cjs',
+            sourcemap: true
         }
     }
 ]
