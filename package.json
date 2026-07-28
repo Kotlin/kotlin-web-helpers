@@ -1,6 +1,6 @@
 {
   "name": "kotlin-web-helpers",
-  "version": "3.4.0",
+  "version": "3.5.0",
   "description": "Kotlin/JS and Kotlin/Wasm utilities to work with Kotlin Gradle Plugin",
   "license": "Apache-2.0",
   "dependencies": {},
