@@ -26,7 +26,7 @@ export const TYPED_MESSAGE = `##teamcity[message text='%s' type='%s']`
  * @see https://confluence.jetbrains.com/display/TCD65/Build+Script+Interaction+with+TeamCity#BuildScriptInteractionwithTeamCity-servMsgsServiceMessages
  */
 
-const format = require('format-util');
+import format from 'format-util'
 
 export function tcEscape(str) {
     if (!str) {
