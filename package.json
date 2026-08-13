@@ -3,9 +3,7 @@
   "version": "3.4.0",
   "description": "Kotlin/JS and Kotlin/Wasm utilities to work with Kotlin Gradle Plugin",
   "license": "Apache-2.0",
-  "dependencies": {
-    "format-util": "^1.0.5"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.2.3",
@@ -13,6 +11,7 @@
     "@rollup/plugin-typescript": "^11.1.5",
     "@types/format-util": "1.0.4",
     "@types/node": "^18.11.18",
+    "format-util": "^1.0.5",
     "copyfiles": "^2.4.1",
     "karma-webpack": "^5.0.1",
     "mocha": "^10.4.0",
