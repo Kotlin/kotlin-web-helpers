@@ -49,7 +49,7 @@ declare global {
         /**
          * Loads Jasmine-like tests on a global scope.
          */
-        loadJasmineTests?: () => Promise<void>
+        loadJasmineLikeTests?: () => Promise<void>
 
         /**
          * Path to esm module with js tests entry point.
