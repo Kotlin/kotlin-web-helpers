@@ -27,7 +27,7 @@ const parser = new CliArgsParser(
 const preExistingConfig: KotlinTestBrowserRunnerConfig = (window.kotlinTestBrowserRunner as KotlinTestBrowserRunnerConfig) || {};
 
 const runnerState = {
-    loadJasmineTests: preExistingConfig.loadJasmineTests,
+    loadJasmineLikeTests: preExistingConfig.loadJasmineLikeTests,
     kotlinJsTestsEntry: preExistingConfig.kotlinJsTestsEntry,
     kotlinWasmJsTestsEntry: preExistingConfig.kotlinWasmJsTestsEntry,
     reporter: preExistingConfig.reporter || TeamcityForWeb,
@@ -42,7 +42,7 @@ const runnerState = {
 
 const runner: KotlinTestBrowserRunner = {
     configure(config: KotlinTestBrowserRunnerConfig) {
-        if (config.loadJasmineTests !== undefined) runnerState.loadJasmineTests = config.loadJasmineTests;
+        if (config.loadJasmineLikeTests !== undefined) runnerState.loadJasmineLikeTests = config.loadJasmineLikeTests;
         if (config.kotlinJsTestsEntry !== undefined) runnerState.kotlinJsTestsEntry = config.kotlinJsTestsEntry;
         if (config.kotlinWasmJsTestsEntry !== undefined) runnerState.kotlinWasmJsTestsEntry = config.kotlinWasmJsTestsEntry;
         if (config.reporter !== undefined) runnerState.reporter = config.reporter;
@@ -75,9 +75,9 @@ const runner: KotlinTestBrowserRunner = {
                 console.error('Failed to load Kotlin WASM JS tests entry point', e);
             }
         }
-        if (runnerState.loadJasmineTests != null) {
+        if (runnerState.loadJasmineLikeTests != null) {
             try {
-                await runnerState.loadJasmineTests();
+                await runnerState.loadJasmineLikeTests();
             } catch (e) {
                 console.error('Failed to load Jasmine tests', e);
             }
