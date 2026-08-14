@@ -34,5 +34,8 @@
     "build": "copyfiles static/* dist/ & rollup -c rollup.config.mjs",
     "test": "mocha",
     "test-teamcity": "mocha --reporter mocha-teamcity-reporter"
+  },
+  "allowScripts": {
+    "fsevents@2.3.3": true
   }
 }
