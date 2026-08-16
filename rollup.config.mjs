@@ -38,7 +38,14 @@ export default [
             format: 'cjs',
             sourcemap: true
         },
-        plugins: plugins()
+        plugins: [
+            nodeResolve({
+                jsnext: true,
+                main: true,
+                browser: true
+            }),
+            ...plugins(),
+        ]
     },
     {
         input: './mochaBrowser.ts',
