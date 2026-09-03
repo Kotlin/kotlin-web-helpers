@@ -34,4 +34,20 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: npm ci
       - run: npm run build
-      - run: npm publish --provenance --access public
+      - name: Determine npm dist-tag
+        id: npm-tag
+        shell: bash
+        run: |
+          RELEASE_TAG="${{ github.event.release.tag_name }}"
+          VERSION="${RELEASE_TAG#v}"
+          PACKAGE_VERSION="$(node -p "require('./package.json').version")"
+
+          if [[ "$VERSION" != "$PACKAGE_VERSION" ]]; then
+            echo "Release tag $RELEASE_TAG does not match package version $PACKAGE_VERSION" >&2
+            exit 1
+          fi
+
+          # npm does not allow a SemVer value such as v3.3.2 as a dist-tag.
+          echo "tag=release-${RELEASE_TAG}" >> "$GITHUB_OUTPUT"
+      - name: Publish package
+        run: npm publish --provenance --access public --tag "${{ steps.npm-tag.outputs.tag }}"
