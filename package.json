@@ -3,6 +3,9 @@
   "version": "3.3.2",
   "description": "Kotlin/JS and Kotlin/Wasm utilities to work with Kotlin Gradle Plugin",
   "license": "Apache-2.0",
+  "repository": {
+    "url": "https://github.com/Kotlin/kotlin-web-helpers"
+  },
   "dependencies": {
     "format-util": "^1.0.5"
   },
@@ -34,5 +37,8 @@
     "build": "copyfiles static/* dist/ & rollup -c rollup.config.mjs",
     "test": "mocha",
     "test-teamcity": "mocha --reporter mocha-teamcity-reporter"
+  },
+  "allowScripts": {
+    "fsevents@2.3.3": true
   }
 }
