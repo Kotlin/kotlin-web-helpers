@@ -225,7 +225,6 @@ function Teamcity(runner, options) {
             recordHookFailures: recordHookFailures,
             actualVsExpected: actualVsExpected,
             topLevelSuite: topLevelSuite,
-            alsoWithHtml: true, // this is redundant as below we pass "Base"
             Base: Base
         }
     });
